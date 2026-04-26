@@ -1,0 +1,30 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# PyTorch
+*.pth
+*.pt
+*.ckpt
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs
+.idea/
+.vscode/
+
+# Datasets / Large files
+*.csv
+*.tsv
+*.zip
+*.tar.gz
+*.json
+!StoryGPT/tokenizer/storygpt_tokenizer/tokenizer.json
