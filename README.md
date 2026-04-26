@@ -1,5 +1,9 @@
 # StoryGPT - LLaMA-Style Language Model Pre-Trained from Scratch
 
+[![🤗 Live Demo](https://img.shields.io/badge/🤗%20HuggingFace-Live%20Demo-blue)](https://huggingface.co/spaces/ziadkassem/StoryGPT)  [![Model](https://img.shields.io/badge/🤗%20HuggingFace-Model-yellow)](https://huggingface.co/ziadkassem/StoryGPT)
+
+> **Try it live:** [huggingface.co/spaces/ziadkassem/StoryGPT](https://huggingface.co/spaces/ziadkassem/StoryGPT)
+
 A 50M parameter decoder-only transformer pre-trained from scratch on the [TinyStories](https://huggingface.co/datasets/roneneldan/TinyStories) dataset.  
 Built to demonstrate a complete, production-grade LLM pipeline — from BPE tokenizer training to multi-GPU inference.
 
