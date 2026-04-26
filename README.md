@@ -1,4 +1,4 @@
-# StoryGPT — LLaMA-Style Language Model Pre-Trained from Scratch
+# StoryGPT - LLaMA-Style Language Model Pre-Trained from Scratch
 
 A 50M parameter decoder-only transformer pre-trained from scratch on the [TinyStories](https://huggingface.co/datasets/roneneldan/TinyStories) dataset.  
 Built to demonstrate a complete, production-grade LLM pipeline — from BPE tokenizer training to multi-GPU inference.
