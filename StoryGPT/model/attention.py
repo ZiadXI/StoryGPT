@@ -102,21 +102,21 @@ class GroupedQueryAttention(nn.Module):
 
 
 
-if __name__ == "__main__":
-    gqa = GroupedQueryAttention(
-        d_in=512,
-        d_out=512,
-        num_heads=8,
-        n_kv_heads=4,
-        context_length=256,
-        dropout=0.0,
-    )
-    print(gqa)
+# if __name__ == "__main__":
+#     gqa = GroupedQueryAttention(
+#         d_in=512,
+#         d_out=512,
+#         num_heads=8,
+#         n_kv_heads=4,
+#         context_length=256,
+#         dropout=0.0,
+#     )
+#     print(gqa)
 
-    x = torch.randn(2, 10, 512)
-    out = gqa(x)
-    print("\nInput shape: ", x.shape)
-    print("Output shape:", out.shape)
-    assert out.shape == x.shape, "Shape mismatch!"
-    print("\nAll checks passed ")
+#     x = torch.randn(2, 10, 512)
+#     out = gqa(x)
+#     print("\nInput shape: ", x.shape)
+#     print("Output shape:", out.shape)
+#     assert out.shape == x.shape, "Shape mismatch!"
+#     print("\nAll checks passed ")
  

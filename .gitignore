@@ -26,5 +26,9 @@ venv.bak/
 *.tsv
 *.zip
 *.tar.gz
+
+# Block all JSON by default (many are large/generated)
 *.json
-!StoryGPT/tokenizer/storygpt_tokenizer/tokenizer.json
+
+# But DO commit the trained tokenizer
+!StoryGPT/tokenizer/storygpt_tokenizer/storygpt_tokenizer.json

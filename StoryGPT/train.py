@@ -3,6 +3,8 @@ import torch.nn.functional as F
 import math
 import os
 
+from model.gpt import GPT
+from config import MODEL_CONFIG, TRAIN_CONFIG
 
 """
 Training the model
@@ -25,13 +27,72 @@ def get_lr(step, warmup_steps, max_steps, max_lr, min_lr):
     progress = (step - warmup_steps) / (max_steps - warmup_steps)
     return min_lr + 0.5 * (max_lr - min_lr) * (1 + math.cos(math.pi * progress))
 
-def train_model():
-
-
-
-
-
- pass
+def train(model, train_loader, val_loader, cfg):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = model.to(device)
+    
+    optimizer = torch.optim.AdamW(
+        model.parameters(),
+        lr=cfg["learning_rate"],
+        weight_decay=cfg["weight_decay"],
+        betas=(0.9, 0.95),        # Standard for LLM training
+    )
+    step = 0
+    best_val_loss = float("inf")
+    scaler = torch.cuda.amp.GradScaler()
+    for epoch in range(999):  # We stop by step count, not epochs
+        model.train()
+        for x, y in train_loader:
+            x, y = x.to(device), y.to(device)
+            
+            # Update learning rate
+            lr = get_lr(step, cfg["warmup_steps"], cfg["max_steps"],
+                       cfg["learning_rate"], cfg["min_lr"])
+            for pg in optimizer.param_groups:
+                pg["lr"] = lr
+            # Forward
+            with torch.cuda.amp.autocast():
+                logits = model(x)
+                loss = F.cross_entropy(
+                    logits.view(-1, logits.size(-1)), 
+                    y.view(-1),
+                    ignore_index=0,  # Ignore pad token (id=0) in loss
+                )
+            # Backward
+            optimizer.zero_grad()
+            
+            scaler.scale(loss).backward()
+            scaler.unscale_(optimizer)
+            # Gradient clipping (prevents training instabilities)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), cfg["grad_clip"])
+            
+            scaler.step(optimizer)
+            scaler.update()
+            # Logging
+            if step % 100 == 0:
+                print(f"Step {step} | Loss: {loss.item():.4f} | LR: {lr:.6f}")
+            # Evaluation
+            if step % cfg["eval_interval"] == 0 and step > 0:
+                train_loss,val_loss = evaluate_model(model, train_loader,val_loader, device)
+                print(f"Train Loss: {train_loss:.4f} | Val Loss: {val_loss:.4f} | Perplexity: {math.exp(val_loss):.2f}")
+                
+                if val_loss < best_val_loss:
+                    best_val_loss = val_loss
+                    torch.save(model.state_dict(), "best_model.pt")
+                    print("Saved best model!")
+                
+                model.train()
+            # Save checkpoint
+            if step % cfg["save_interval"] == 0 and step > 0:
+                torch.save({
+                    "step": step,
+                    "model": model.state_dict(),
+                    "optimizer": optimizer.state_dict(),
+                    "best_val_loss": best_val_loss,
+                }, f"checkpoint_step{step}.pt")
+            step += 1
+            if step >= cfg["max_steps"]:
+                return
 
 def calc_loss_batch(input_batch,target_batch,model,device):
     input_batch,target_batch = input_batch.to(device),target_batch.to(device)
@@ -60,7 +121,7 @@ def calc_av_loss(loader,model,device,num_batches=None):
      total_loss += calc_loss_batch(x,y,model,device).item() # item enhanced ram
     return total_loss / (i+1) # as i is zero indexed
 
-def evaluate_modell(model,train_loadeval_loader,device,eval_iter=50):
+def evaluate_model(model,train_loader,val_loader,device,eval_iter=50):
     
     model.eval()
 
@@ -70,3 +131,5 @@ def evaluate_modell(model,train_loadeval_loader,device,eval_iter=50):
 
     model.train() #WARNING
     return train_loss,val_loss
+
+    

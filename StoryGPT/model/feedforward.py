@@ -7,7 +7,7 @@ Instead of one linear projection into GELU,
 you do two parallel projections and multiply 
 them together
 
-FFN: Input → expand → non-linearity → project back
+FFN: Input -> expand -> non-linearity -> project back
 SwiGLUFFN: It adds capacity + non-linearity to the transformer
 
 """
